@@ -1,0 +1,419 @@
+# INVENTORY MANAGEMENT SYSTEM
+# REPORTING REQUIREMENTS SPECIFICATION
+
+**Document Version: 1.0**  
+
+
+## DOCUMENT PURPOSE
+
+This document outlines the official reporting requirements for the Inventory Management System based on the current database structure. These requirements will guide the development of analytical dashboards to support daily decision-making processes.
+
+## DATABASE STRUCTURE
+
+The following tables form the foundation of the reporting system:
+
+**Products Table:**
+- Primary Key: Product_ID
+- Columns: Product_Name, Category
+
+**Suppliers Table:**
+- Primary Key: Supplier_ID
+- Columns: Supplier_Name, Contact_Number
+- Foreign Key: Product_ID references Products(Product_ID)
+
+**Warehouses Table:**
+- Primary Key: Warehouse_ID
+- Columns: Location, Capacity
+
+**Inventory Table:**
+- Primary Key: Inventory_ID
+- Columns: Quantity_Available
+- Foreign Keys: 
+  - Product_ID references Products(Product_ID)
+  - Warehouse_ID references Warehouses(Warehouse_ID)
+
+**Orders Table:**
+- Primary Key: Order_ID
+- Columns: Order_Date
+- Foreign Key: Customer_ID references Customers(Customer_ID)
+
+**Order_Details Table:**
+- Primary Key: Order_Detail_ID
+- Columns: Quantity_Ordered
+- Foreign Keys:
+  - Order_ID references Orders(Order_ID)
+  - Product_ID references Products(Product_ID)
+
+**Shipments Table:**
+- Primary Key: Shipment_ID
+- Columns: Shipment_Date
+- Foreign Key: Order_ID references Orders(Order_ID)
+
+**Returns Table:**
+- Primary Key: Return_ID
+- Columns: Return_Reason
+- Foreign Key: Order_ID references Orders(Order_ID)
+
+**Stock_Levels Table:**
+- Primary Key: Stock_Level_ID
+- Columns: Reorder_Threshold
+- Foreign Keys:
+  - Warehouse_ID references Warehouses(Warehouse_ID)
+  - Product_ID references Products(Product_ID)
+
+**Customers Table:**
+- Primary Key: Customer_ID (implied)
+- Columns: Customer_Name, Email
+
+## REPORT SPECIFICATIONS
+
+### 1. INVENTORY STOCK LEVELS REPORT
+
+**Business Objective:**  
+Monitor current inventory levels against reorder thresholds across warehouses to prevent stockouts.
+
+**Uses of the Report:**
+- Identify products that need immediate replenishment
+- Optimize inventory distribution across warehouses
+- Support procurement planning and decision-making
+- Prevent stockouts and excess inventory situations
+- Track inventory levels by product category and warehouse location
+
+**Data Relationships Used:**
+- Inventory → Products (via Product_ID)
+- Inventory → Warehouses (via Warehouse_ID)
+- Stock_Levels → Products (via Product_ID)
+- Stock_Levels → Warehouses (via Warehouse_ID)
+
+**Data Attributes in the Report:**
+- Product information (Product_ID, Product_Name, Category)
+- Warehouse information (Warehouse_ID, Location, Capacity)
+- Current inventory levels (Quantity_Available)
+- Threshold levels (Reorder_Threshold)
+- Stock status indicator (calculated)
+- Threshold alert indicators (calculated)
+
+**KPIs and Metrics in the Report:**
+- Current inventory quantity by product and warehouse
+- Products below reorder threshold (count and percentage)
+- Inventory distribution by product category
+- Warehouse capacity utilization
+- Stock status distribution
+- Critical stock alerts (items at or near zero inventory)
+
+**Calculations in the Report:**
+- Stock Status = IF(Inventory.Quantity_Available <= Stock_Levels.Reorder_Threshold, "Below Threshold", "Above Threshold")
+- Below Threshold Count = COUNT(Product_ID WHERE Stock Status = "Below Threshold")
+- Threshold Alert Percentage = (Below Threshold Count / Total Product Count) × 100
+- Critical Stock Alert = IF(Inventory.Quantity_Available < (Stock_Levels.Reorder_Threshold * 0.5), "Critical", "Normal")
+- Category Inventory Distribution = SUM(Inventory.Quantity_Available) GROUP BY Products.Category
+
+**Data Constraints:**
+- Product_ID must exist in the Products table
+- Warehouse_ID must exist in the Warehouses table
+- Quantity_Available must be a non-negative integer
+- Reorder_Threshold must be a positive integer
+- Each Product_ID and Warehouse_ID combination should appear only once in Stock_Levels
+
+**Validations:**
+- Ensure Quantity_Available is valid and consistent with Order_Details and Returns data
+- Verify that Stock_Levels.Reorder_Threshold values are appropriate for each product
+- Validate that all products in Inventory have corresponding entries in Stock_Levels
+- Check for products with zero inventory but active orders
+- Ensure all warehouse references are valid and current
+
+**Visualization Requirements:**
+- KPI dashboard showing threshold alerts by warehouse
+- Product inventory table with threshold indicators
+- Category-based inventory distribution chart
+
+**Access Control Requirements:**
+- Warehouse managers: Filtered by specific warehouse
+- Inventory managers: Full access across warehouses
+- Executives: Aggregated view with drill-down capability
+
+---
+
+### 2. SUPPLIER PRODUCT MANAGEMENT REPORT
+
+**Business Objective:**  
+Evaluate supplier product portfolios and support procurement decision-making.
+
+**Uses of the Report:**
+- Identify which suppliers provide which products
+- Manage supplier relationships based on product performance
+- Support procurement planning and supplier negotiations
+- Identify single-source products requiring backup suppliers
+- Assess supplier diversity by product category
+
+**Data Relationships Used:**
+- Suppliers → Products (via Product_ID)
+- Products → Inventory (via Product_ID)
+
+**Data Attributes in the Report:**
+- Supplier information (Supplier_ID, Supplier_Name, Contact_Number)
+- Product information (Product_ID, Product_Name, Category)
+- Inventory levels for supplied products (Quantity_Available)
+- Relationship indicator showing main supplier for each product
+- Product count by supplier (calculated)
+
+**KPIs and Metrics in the Report:**
+- Number of products supplied by each supplier
+- Product category distribution by supplier
+- Current inventory levels for supplier products
+- Supplier concentration by product category
+- Single-source product identification
+
+**Calculations in the Report:**
+- Supplier Product Count = COUNT(Products) WHERE Suppliers.Product_ID = Products.Product_ID
+- Category Distribution = COUNT(Products.Product_ID) GROUP BY Products.Category, Suppliers.Supplier_ID
+- Supplier Product Inventory = SUM(Inventory.Quantity_Available) WHERE Inventory.Product_ID = Suppliers.Product_ID
+- Single Source Products = COUNT(Products.Product_ID) WHERE COUNT(DISTINCT Suppliers.Supplier_ID) = 1
+- Supplier Category Concentration = Supplier Product Count in Category / Total Products in Category × 100
+
+**Data Constraints:**
+- Supplier_ID must be unique and non-null
+- Product_ID in Suppliers table must exist in Products table
+- Contact_Number should be in a valid format
+- Each Supplier should have at least one associated Product
+- Prevent duplicate Supplier and Product combinations
+
+**Validations:**
+- Verify that all Product_ID values in Suppliers table exist in Products table
+- Ensure Contact_Number follows a consistent format
+- Validate that each product has at least one supplier
+- Check for products with multiple suppliers and mark appropriately
+- Verify that supplier information is complete and up-to-date
+
+**Visualization Requirements:**
+- Supplier contact information table
+- Product category distribution by supplier chart
+- Inventory levels for supplier products
+- Single-source product highlights
+
+**Access Control Requirements:**
+- Procurement team: Full detailed access
+- Category managers: Category-specific views
+- Senior management: Executive summary view
+
+---
+
+### 3. ORDER AND INVENTORY ANALYSIS REPORT
+
+**Business Objective:**  
+Analyze relationships between orders and inventory levels to optimize stock management.
+
+**Uses of the Report:**
+- Identify high-demand products requiring inventory priority
+- Track order patterns to support inventory planning
+- Balance inventory levels against customer demand
+- Identify potential stockout risks based on order volume
+- Support sales and inventory coordination
+
+**Data Relationships Used:**
+- Orders → Order_Details (via Order_ID)
+- Order_Details → Products (via Product_ID)
+- Products → Inventory (via Product_ID)
+
+**Data Attributes in the Report:**
+- Product information (Product_ID, Product_Name, Category)
+- Order details (Order_ID, Order_Date, Quantity_Ordered)
+- Current inventory levels (Quantity_Available)
+- Order-to-inventory relationships (calculated)
+- Historical order patterns by date
+
+**KPIs and Metrics in the Report:**
+- Total order quantities by product and category
+- Order-to-inventory ratio
+- Product demand ranking
+- Order frequency by product
+- Historical order trends
+- Potential stockout risk indicators
+
+**Calculations in the Report:**
+- Total Quantity Ordered = SUM(Order_Details.Quantity_Ordered) GROUP BY Product_ID
+- Order to Inventory Ratio = Total Quantity Ordered / Inventory.Quantity_Available
+- Product Demand Rank = RANK() OVER (ORDER BY Total Quantity Ordered DESC)
+- Order Frequency = COUNT(DISTINCT Orders.Order_ID) GROUP BY Product_ID
+- Stockout Risk = IF(Order to Inventory Ratio > 0.8, "High", IF(Order to Inventory Ratio > 0.5, "Medium", "Low"))
+
+**Data Constraints:**
+- Order_ID must exist in the Orders table
+- Product_ID must exist in the Products table
+- Quantity_Ordered must be a positive integer
+- Order_Date must be a valid date
+- Each Order_Detail must have a valid Order_ID and Product_ID
+
+**Validations:**
+- Ensure Order_Details.Quantity_Ordered values are reasonable for each product
+- Verify that Order_Date values are within valid business periods
+- Validate that all ordered products exist in the inventory
+- Check for unusually high order quantities that might indicate data errors
+- Ensure that order trends align with inventory planning
+
+**Visualization Requirements:**
+- Order quantity vs. inventory level comparison
+- Product demand ranking table
+- Order trends by product category chart
+- Stockout risk heat map
+
+**Access Control Requirements:**
+- Sales team: Order and product performance data
+- Inventory managers: Full correlation view
+- Executives: Strategic overview with alerts
+
+---
+
+### 4. WAREHOUSE CAPACITY UTILIZATION REPORT
+
+**Business Objective:**  
+Monitor warehouse capacity utilization to optimize inventory distribution.
+
+**Uses of the Report:**
+- Optimize space utilization across warehouses
+- Balance inventory distribution based on warehouse capacity
+- Identify warehouses nearing capacity limits
+- Support warehouse expansion or consolidation decisions
+- Improve warehouse space efficiency
+
+**Data Relationships Used:**
+- Warehouses → Inventory (via Warehouse_ID)
+- Inventory → Products (via Product_ID)
+
+**Data Attributes in the Report:**
+- Warehouse information (Warehouse_ID, Location, Capacity)
+- Inventory details (Quantity_Available, Product_ID)
+- Product information (Product_Name, Category)
+- Warehouse capacity utilization metrics (calculated)
+- Product diversity by warehouse (calculated)
+
+**KPIs and Metrics in the Report:**
+- Product count per warehouse
+- Total inventory quantity by warehouse
+- Estimated capacity utilization percentage
+- Product category distribution by warehouse
+- Warehouse efficiency metrics
+- Space availability indicators
+
+**Calculations in the Report:**
+- Warehouse Product Count = COUNT(DISTINCT Inventory.Product_ID) GROUP BY Warehouse_ID
+- Total Inventory Quantity = SUM(Inventory.Quantity_Available) GROUP BY Warehouse_ID
+- Warehouse Category Distribution = COUNT(Inventory.Product_ID) GROUP BY Warehouse_ID, Products.Category
+- Estimated Utilization = SUM(Inventory.Quantity_Available) / Warehouses.Capacity × 100
+- Space Availability = Warehouses.Capacity - SUM(Inventory.Quantity_Available)
+
+**Data Constraints:**
+- Warehouse_ID must exist in the Warehouses table
+- Product_ID must exist in the Products table
+- Capacity must be a positive number
+- Quantity_Available must be non-negative
+- Each warehouse should have a unique location
+
+**Validations:**
+- Ensure Warehouse.Capacity values are reasonable and consistent
+- Verify that Inventory.Quantity_Available totals do not exceed Warehouse.Capacity
+- Validate that all warehouses have associated inventory records
+- Check for warehouses nearing capacity and flag for attention
+- Ensure location data is accurate and current
+
+**Visualization Requirements:**
+- Warehouse capacity vs. usage chart
+- Product distribution by warehouse map
+- Category mix by warehouse
+- Warehouse utilization heat map
+
+**Access Control Requirements:**
+- Warehouse managers: Location-specific access
+- Logistics team: Cross-warehouse comparison
+- Operations executives: Network-wide view
+
+---
+
+### 5. ORDER RETURNS ANALYSIS REPORT
+
+**Business Objective:**  
+Identify return patterns and reasons to improve inventory quality and customer satisfaction.
+
+**Uses of the Report:**
+- Analyze return reasons to address quality issues
+- Identify products with high return rates
+- Improve customer satisfaction by reducing returns
+- Support quality control and product improvement initiatives
+- Track return trends over time
+
+**Data Relationships Used:**
+- Returns → Orders (via Order_ID)
+- Orders → Order_Details (via Order_ID)
+- Order_Details → Products (via Product_ID)
+- Orders → Customers (via Customer_ID)
+
+**Data Attributes in the Report:**
+- Return information (Return_ID, Return_Reason)
+- Order details (Order_ID, Order_Date, Customer_ID)
+- Product information (Product_ID, Product_Name, Category)
+- Customer information (Customer_Name, Email)
+- Return metrics and trends (calculated)
+
+**KPIs and Metrics in the Report:**
+- Return frequency by product and category
+- Return reason distribution
+- Order-to-return ratio
+- Return trends over time
+- Customer return patterns
+- High-return products identification
+
+**Calculations in the Report:**
+- Product Return Count = COUNT(Returns.Return_ID) JOIN to Products via Order_Details
+- Return Reason Distribution = COUNT(Returns.Return_ID) GROUP BY Returns.Return_Reason
+- Return Rate = COUNT(Returns.Return_ID) / COUNT(Orders.Order_ID) × 100
+- Customer Return Frequency = COUNT(Returns.Return_ID) GROUP BY Orders.Customer_ID
+- High Return Products = Products WHERE Return Rate > (Average Return Rate + 20%)
+
+**Data Constraints:**
+- Return_ID must be unique
+- Order_ID must exist in the Orders table
+- Return_Reason must be one of the predefined values (Damaged, Defective, Wrong Item)
+- Each return must be associated with a valid order
+- Each order can have at most one return record
+
+**Validations:**
+- Ensure Return_Reason values are consistent and valid
+- Verify that returned orders exist in the Orders table
+- Validate that return dates (implied by relationship to Orders) are after order dates
+- Check for unusual return patterns that might indicate data issues
+- Ensure customer information is correctly associated with returns
+
+**Visualization Requirements:**
+- Return reason pie chart
+- Product return rate comparison table
+- Return trend analysis by date
+- Customer return pattern analysis
+
+**Access Control Requirements:**
+- Customer service: Full access to returns data
+- Quality control: Return reason analysis
+- Product management: Product-specific return rates
+
+---
+
+## TECHNICAL REQUIREMENTS
+
+**Data Integration:**
+- Table relationships must be properly configured according to the identified primary and foreign keys
+- Data must be validated against the constraints in the database schema
+- Join operations must use the correct keys to ensure data integrity
+
+**Performance:**
+- Optimize queries involving multiple table joins
+- Create appropriate indices on foreign key columns
+- Implement efficient aggregation operations for metrics calculations
+
+**Security:**
+- Role-based access control aligned with the specified access requirements
+- Column-level security where appropriate
+- Audit logging for data modifications
+
+**Report Delivery:**
+- Daily/weekly automated report generation
+- Alert system for threshold violations
+- Mobile-responsive dashboard access
