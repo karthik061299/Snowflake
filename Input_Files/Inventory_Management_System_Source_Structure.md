@@ -1,3 +1,7 @@
+# Inventory Management Process Tables
+
+## Data Model
+
 Inventory Management Application Data Model
 
 The tables in the Inventory Management application include following
