@@ -648,4 +648,9 @@ _____________________________________________
     ```sql
     SELECT COUNT(*) as over_capacity_warehouses 
     FROM (
-        SELECT w.Warehouse_ID
+        SELECT w.Warehouse_ID, 
+               SUM(i.Quantity_Available) as total_inventory,
+               w.Capacity,
+               (SUM(i.Quantity_Available) / w.Capacity) * 100 as utilization_pct
+        FROM Bronze.bz_warehouses w 
+        LEFT JOIN
