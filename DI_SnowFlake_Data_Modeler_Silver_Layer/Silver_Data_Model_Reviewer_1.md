@@ -1,5 +1,5 @@
 _____________________________________________
-## *Author*: Ascendion AVA+
+## *Author*: AAVA
 ## *Created on*:   
 ## *Description*: Silver Data Model Reviewer for Inventory Management System
 ## *Version*: 1 
