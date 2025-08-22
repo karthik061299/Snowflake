@@ -1,9 +1,9 @@
 _____________________________________________
 ## *Author*: AAVA
-## *Created on*: 2024-12-19
+## *Created on*:   
 ## *Description*: Formal code review report for Bronze Layer Stored Procedure Pipeline
-## *Version*: 1
-## *Updated on*: 2024-12-19
+## *Version*: 1 
+## *Updated on*: 
 _____________________________________________
 
 # Bronze Layer Stored Procedure Pipeline - Code Review Report
