@@ -1,5 +1,5 @@
 _____________________________________________
-## *Author*: Ascendion AVA+
+## *Author*: AAVA
 ## *Created on*:   
 ## *Description*: Silver layer logical data model for Inventory Management System following medallion architecture
 ## *Version*: 1 
