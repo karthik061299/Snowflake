@@ -11,5 +11,14 @@ _____________________________________________
 -- =====================================================
 -- Purpose: Comprehensive data ingestion pipeline for Bronze layer
 -- Source: Inventory Management System (10 tables)
--- Target: Snowflake Bronze layer with bz_ prefix
--- Features: Audit logging
+-- Target: Snowflake Bronze layer with metadata tracking
+-- Architecture: Medallion Architecture - Bronze Layer
+-- =====================================================
+
+-- =====================================================
+-- 1. AUDIT AND ERROR TABLES CREATION
+-- =====================================================
+
+-- Create audit table for tracking all ingestion activities
+CREATE TABLE IF NOT EXISTS Bronze.bz_ingestion_audit (
+    ingestion_id STRING DEFAULT CONCAT('ING_'
