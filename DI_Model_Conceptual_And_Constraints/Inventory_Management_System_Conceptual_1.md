@@ -1,5 +1,5 @@
 _____________________________________________
-## *Author*: Ascendion AVA+
+## *Author*: AAVA
 ## *Created on*:   
 ## *Description*: Conceptual data model for Inventory Management System reporting requirements
 ## *Version*: 1 
