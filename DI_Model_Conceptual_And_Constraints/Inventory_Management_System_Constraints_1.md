@@ -1,5 +1,5 @@
 ____________________________________________
-## *Author*: Ascendion AVA+
+## *Author*: AAVA
 ## *Created on*:   
 ## *Description*: Model Data Constraints for Inventory Management System reporting requirements
 ## *Version*: 1 
