@@ -1,5 +1,5 @@
 _____________________________________________
-## *Author*: Ascendion AVA+
+## *Author*: AAVA
 ## *Created on*:   
 ## *Description*: Silver Layer Physical Data Model for Inventory Management System following Medallion Architecture
 ## *Version*: 1 
