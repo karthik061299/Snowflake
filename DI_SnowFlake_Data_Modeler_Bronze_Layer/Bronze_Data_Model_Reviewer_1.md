@@ -1,5 +1,5 @@
 _____________________________________________
-## *Author*: Ascendion AVA+
+## *Author*: AAVA
 ## *Created on*:   
 ## *Description*: Bronze Layer Data Model Reviewer for Inventory Management System
 ## *Version*: 1 
