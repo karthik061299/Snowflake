@@ -865,4 +865,5 @@ CREATE TABLE IF NOT EXISTS Gold.go_new_dimension (
     
     -- Data quality metrics
     data_quality_score NUMBER(3,2),
-    is_active BOOLEAN
+    is_active BOOLEAN,
+    \
