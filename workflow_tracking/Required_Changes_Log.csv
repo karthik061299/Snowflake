@@ -1,0 +1,4 @@
+Agent Name,Required Changes
+Data Model Review Agent,Missing Requirements - Red Tick items need to be addressed
+Data Model Review Agent,Critical Issues identified in section 5.1 require resolution
+Data Model Review Agent,Physical DDL scripts need review and updates based on conceptual model gaps
