@@ -1,7 +1,0 @@
--- Optimized Snowflake SQL: Customer_Sales_Report_Optimized.sql
--- Optimizations performed:
--- 1. Removed unnecessary intermediate CTEs (cte1 and cte2 merged into main query).
--- 2. Replaced SELECT * with explicit column lists.
--- 3. Standardized formatting and indentation.
--- 4. Used meaningful aliases for tables.
--- 5. Ensured all business logic
